@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-
+const {keyConfig} = require('./scripts/keyConfig.json');
 // Go to https://alchemy.com, sign up, create a new App in
 // its dashboard, and replace "KEY" with its key
 const ALCHEMY_API_KEY = "2vsw2JgOi6Hq-";
@@ -13,11 +13,19 @@ const ALCHEMY_API_KEY = "2vsw2JgOi6Hq-";
 // todo syj delete it after used
 const SEPOLIA_PRIVATE_KEY = "";
 
+task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
+  const accounts = await hre.ethers.getSigners();
+
+  for (const account of accounts) {
+    console.log(account.address);
+  }
+});
+
 module.exports = {
   solidity: "0.8.19",
   networks: {
     sepolia: {
-      url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      url: keyConfig.RPCProvider["sepolia.testnet"],
       accounts: [SEPOLIA_PRIVATE_KEY]
     }
   }
