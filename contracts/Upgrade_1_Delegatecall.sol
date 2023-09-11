@@ -18,6 +18,7 @@ contract TargetContract {
         console.log(", c:", c);
     }
 }
+
 //常规的delegatecall方式，即本身要保留状态变量
 contract OrthodoxDelegateCaller {
 
