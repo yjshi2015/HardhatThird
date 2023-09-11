@@ -38,9 +38,13 @@ contract LogicContract2 {
 }
 
 /**
- * ①该proxy合约中state variable不需要显式声明，通过delegatecall会自动将logic合约的
+ * ①该proxy合约中state variable不需要显式声明，通过“delegatecall会自动”将logic合约的
  *  state variable自动映射到该合约中，并与其保持一致
- * ②logic合约的地址存通过inline assemble放在指定的slot中，防止跟logic合约的槽位冲突
+ * ②logic合约的地址存通过inline assemble放在指定的slot中，而不是直接声明的方式（这种
+ *  方式slot都是从0开始自增），是防止跟logic合约的槽位冲突；另外由于dynamic array和map
+ *  的槽位也是keccak256计算来的，因为是logic proxy的slot是bytes32,所以与其冲突概率极低
+ * ③logic合约升级时，如果增加state variable，必须采用append的方式，之前的state variable
+ *  不允许修改，也不允许增删，否则会导致合约layout不一致
  */
 contract UpgradeProxyDemo {
 
