@@ -45,6 +45,7 @@ contract LogicContract2 {
  *  的槽位也是keccak256计算来的，因为是logic proxy的slot是bytes32,所以与其冲突概率极低
  * ③logic合约升级时，如果增加state variable，必须采用append的方式，之前的state variable
  *  不允许修改，也不允许增删，否则会导致合约layout不一致
+ * ④如果chain上部署，去掉console.sol
  */
 contract UpgradeProxyDemo {
 
