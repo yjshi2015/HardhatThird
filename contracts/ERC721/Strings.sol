@@ -12,6 +12,13 @@ library Strings {
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+     * 返回数字本身，只不过是用string形式表示。
+     * 例：输入: 1234567890
+     *    输出："1234567890"
+     * 跟如下函数功能类似
+     * function func(uint256 value) public pure returns (uint256) {
+     *    return value;
+     * }
      */
     function toString(uint256 value) internal pure returns (string memory) {
         // Inspired by OraclizeAPI's implementation - MIT licence
@@ -68,6 +75,7 @@ library Strings {
 
     /**
      * @dev Converts an `address` with fixed length of 20 bytes to its not checksummed ASCII `string` hexadecimal representation.
+     * 特别说明：这个函数实现的效果跟abi.encodePackage("address")一样!!!
      */
     function toHexString(address addr) internal pure returns (string memory) {
         return toHexString(uint256(uint160(addr)), _ADDRESS_LENGTH);
