@@ -4,7 +4,9 @@
 - 投assume
 - WTF课程3节
 - ctf-->mapping的布局
-sol继承后，状态变量需要在继承合约中再写一遍，并且在最后追加上新的state variable？还是新合约直接定义追加的state variable？
+- sol继承后，state variable如何定义！
+ - child合约中直接定义新的state variable，不需要再重写一遍parent的state variable，否则继承有何意义？！
+
 solidity的layout storage ：https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html
 memory layout 也了解下
 - vscode如何配置solidity编译器，识别语法错误
