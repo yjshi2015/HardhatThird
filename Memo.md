@@ -7,6 +7,7 @@
 sol继承后，状态变量需要在继承合约中再写一遍，并且在最后追加上新的state variable？还是新合约直接定义追加的state variable？
 solidity的layout storage ：https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html
 memory layout 也了解下
+- vscode如何配置solidity编译器，识别语法错误
 
 ## 919今日问题
 

@@ -2,7 +2,8 @@
 // wtf.academy
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "hardhat/console.sol";
 
 /**
  * @title ERC20代币线性释放
@@ -20,7 +21,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  */
 contract TokenVesting {
     // 事件
-    event ERC20Released(address indexed token, uint256 amount); // 提币事件
+    event ERC20Released(address indexed beneficiary, uint256 amount); // 提币事件
     //项目启动，受益人可以按照约定领取Token，amount即项目方注入的总资金
     event VestingBegin(uint amount);
 
@@ -47,20 +48,23 @@ contract TokenVesting {
      * @dev 初始化受益人地址，释放周期(秒), 起始时间戳(当前区块链时间戳)
      */
     constructor(
-        BeneficiaryParam[] _beneficiaryParam,
+        BeneficiaryParam[] memory _beneficiaryParam,
         address _erc20
     ) {
         require(_beneficiaryParam.length > 0, "invalid param: _beneficiaryParam");
         erc20 = IERC20(_erc20);
+        beneficiaryAddr = new address[](_beneficiaryParam.length);
+
         for (uint i; i < _beneficiaryParam.length; i++) {
-            Beneficiary beneficiary = Beneficiary({
+            Beneficiary memory beneficiary = Beneficiary({
                 erc20Pending : _beneficiaryParam[i].erc20Pending,
                 erc20Released : 0,
                 start : _beneficiaryParam[i].start,
                 duration : _beneficiaryParam[i].duration
             });
             beneficiaryMap[_beneficiaryParam[i].addr] = beneficiary;
-            beneficiaryAddr[i] = _beneficiaryParam[i].addr
+            //必须先声明长度，再进行赋值
+            beneficiaryAddr[i] = _beneficiaryParam[i].addr;
         }
     }
 
@@ -70,12 +74,13 @@ contract TokenVesting {
         uint total;
         for(uint i; i < beneficiaryAddr.length; i++) {
             address thisAddr = beneficiaryAddr[i];
-            Beneficiary beneficiary = beneficiaryMap[thisAddr];
+            Beneficiary memory beneficiary = beneficiaryMap[thisAddr];
             total += (beneficiary.erc20Pending + beneficiary.erc20Released);
         }
         require(erc20.balanceOf(address(this)) >= total, "VestingBegin failed: insufficient token");
         begin = true;
         emit VestingBegin(total);
+        return begin;
     }
 
     modifier started {
@@ -89,7 +94,7 @@ contract TokenVesting {
      * 释放 {ERC20Released} 事件.
      */
     function release() public started{
-        Beneficiary beneficiary = beneficiaryMap[msg.sender];
+        Beneficiary storage beneficiary = beneficiaryMap[msg.sender];
         //必须是受益人领取收益
         require(beneficiary.duration > 0, "you can not release!");
 
@@ -102,29 +107,31 @@ contract TokenVesting {
 
         // 转代币给受益人
         emit ERC20Released(msg.sender, releasable);
-        IERC20(token).transfer(msg.sender, releasable);
+        erc20.transfer(msg.sender, releasable);
     }
 
     /**
      * @dev 根据线性释放公式，计算已经释放的数量。开发者可以通过修改这个函数，自定义释放方式。
-     * @param token: 代币地址
-     * @param timestamp: 查询的时间戳
+     * @param beneficiary: 代币地址
      */
-    function vestedAmount(Beneficiary calldata beneficiary) public view returns (uint256 releasable) {
+    function vestedAmount(Beneficiary memory beneficiary) public view returns (uint256) {
         uint timestamp = uint256(block.timestamp);
+        uint tmp = block.timestamp;
+        console.log("timestamp: ", tmp);
         // 合约里总共收到了多少代币（当前余额 + 已经提取）
         uint totalAllocation = beneficiary.erc20Pending + beneficiary.erc20Released;
         uint start = beneficiary.start;
         uint duration = beneficiary.duration;
         uint erc20Released = beneficiary.erc20Released;
-        uint releasable;
+        uint _releasable;
         // 根据线性释放公式，计算已经释放的数量
         if (timestamp < start) {
-            releasable = 0;
+            _releasable = 0;
         } else if (timestamp > start + duration) {
-            releasable = beneficiary.erc20Pending;
+            _releasable = beneficiary.erc20Pending;
         } else {
-            releasable = (totalAllocation * (timestamp - start)) / duration - erc20Released;
+            _releasable = (totalAllocation * (timestamp - start)) / duration - erc20Released;
         }
+        return _releasable;
     }
 }
