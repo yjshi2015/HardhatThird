@@ -2,13 +2,8 @@
 
 ## 920今日问题
 - 投assume
-- WTF课程3节
-- ctf-->mapping的布局
-- sol继承后，state variable如何定义！
- - child合约中直接定义新的state variable，不需要再重写一遍parent的state variable，否则继承有何意义？！
-
-solidity的layout storage ：https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html
-memory layout 也了解下
+- ~~WTF课程3节~~
+- ~~ctf-->mapping的布局~~
 - vscode如何配置solidity编译器，识别语法错误
 
 ## 919今日问题
@@ -22,7 +17,6 @@ nuiswap
 5、vscode无法打开import的sol文件
 
 ## 代办
-
 
 5、当前项目是否有漏洞？？？
 
@@ -40,9 +34,10 @@ nuiswap
 
 14、熟练使用hardhat/foundry等框架开发、测试、部署智能合约；
 
-wtf课程
 
 
+- sol继承后，state variable如何定义！
+ - child合约中直接定义新的state variable，不需要再重写一遍parent的state variable，否则继承有何意义？！
 
 - ERC721中的safeTransferFrom：安全转账，究竟安全在哪里？
  - 如果接收方是合约地址，会要求实现ERC721Receiver接口

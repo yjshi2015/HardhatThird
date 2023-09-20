@@ -3,10 +3,16 @@ pragma solidity >=0.4.0 <0.9.0;
 
 import "hardhat/console.sol";
 /**
- * @title 获取map结构中指定key的槽位
+ * @title 
  * @author 
- * @notice 槽位计算逻辑：keccak256(h(k) . p)，其中h取决于key的类型，p为当前变量所在的槽位，
- *         p为小数点.为连接符，可使用abi.encode进行连接
+ * @notice 
+ * 获取map结构中指定key的槽位：
+ *    获取槽位计算逻辑：keccak256(h(k) . p)，其中h取决于key的类型，p为当前变量所在的槽位，
+ *    p为小数点.为连接符，可使用abi.encode进行连接
+ * 
+ * 获取动态数组中指定index元素的槽位：
+ *    ①state variables的槽位记录了数组长度，在map中该slot的值为空
+ *    ②获取index槽位计算逻辑：keccak256(p) + index
  */
 contract LayoutDemo {
     struct S { uint16 a; uint16 b; uint256 c; }
@@ -15,6 +21,7 @@ contract LayoutDemo {
     uint public z;
     mapping (address => uint256) public account;
     mapping(uint => mapping(uint => S)) public data;
+    uint[] public dynamicArr;
 
     constructor(uint _x, uint _y) {
         x = _x;
@@ -26,8 +33,10 @@ contract LayoutDemo {
             c: x + y
         });
         data[x][y] = s;
+        dynamicArr = new uint[](_x + _y);
     }
 
+    //根据slot获取对应的值
     function getValBySlot(uint256 _slot) public view returns(uint256 val) {
         assembly {
             val := sload(_slot)
@@ -54,5 +63,27 @@ contract LayoutDemo {
         assembly {
             z_slot := z.slot
         }
+    }
+
+    function putArr(uint _index, uint _x) external {
+        uint len = dynamicArr.length;
+        console.log("dynamicArr.length: ", len);
+        dynamicArr[_index] = _x;
+    }
+
+    //对于dynamic array，它的state vairble所在的slot记录了数组长度
+    function getArrLenBySlot() external view returns(uint len) {
+        assembly {
+            len := sload(5)
+        }
+    }
+
+    
+    //keccak256(p):该slot存储动态数组长度
+    //keccak256(p) + index:为index元素的slot
+    function getArrayItemSlot(uint _index) external pure returns (uint256 slot) {
+        uint256 firstSlot = uint256(keccak256(abi.encode(5)));
+        uint256 indexSlot = firstSlot + _index;
+        slot = indexSlot;
     }
 }
