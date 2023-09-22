@@ -1,9 +1,21 @@
 # 记录日常问题
 
-## 921今日代办
+## 922代办
 - 投assume
 - WTF课程3节
-- 已知合约地址和布局，能否获取私有state variabl的值
+- 记录BOSS全国智能合约岗位数量、远程数量
+- V站咨询remote 智能合约岗是海投，还是精挑细选
+- https://mirror.xyz/是什么网站
+
+- 跨链桥
+- rust
+- hardhat
+- nuiswap
+- 前端react、uswagi
+
+## 921今日代办
+- ~~投assume~~
+- ~~WTF课程3节~~
 - vscode如何配置solidity编译器，识别语法错误
 - vscode快捷键 设置成跟IDEA一样
 
@@ -13,14 +25,8 @@
 - ~~ctf-->mapping的布局~~
 
 ## 919今日问题
-
-hardhat
-nuiswap
-前端react、uswagi
-
-
-3、如何debug？    可以点开右侧的Debug按钮，具体查看下面的logs。
-5、vscode无法打开import的sol文件
+- Remix如何debug？    可以点开右侧的Debug按钮，具体查看下面的logs。
+- vscode无法打开import的sol文件
 
 ## 代办
 
@@ -40,9 +46,11 @@ nuiswap
 14、熟练使用hardhat/foundry等框架开发、测试、部署智能合约；
 
 
+- 已知合约地址和布局，能否获取私有state variable的值
+ + 不行，但是可以得到state variable的slot。部署新合约，layout及state variabl的值跟原合约一模一样，进而按照规则计算相应的slot
 
 - sol继承后，state variable如何定义！
- - child合约中直接定义新的state variable，不需要再重写一遍parent的state variable，否则继承有何意义？！
+ + child合约中直接定义新的state variable，不需要再重写一遍parent的state variable，否则继承有何意义？！
 
 - ERC721中的safeTransferFrom：安全转账，究竟安全在哪里？
  + 如果接收方是合约地址，会要求实现ERC721Receiver接口

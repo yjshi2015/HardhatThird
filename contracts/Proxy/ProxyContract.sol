@@ -8,9 +8,17 @@ pragma solidity ^0.8.4;
  *
  * 委托调用的返回值，会直接返回给Proxy的调用者
  * 
- * @note 
- * 1.如果单独调用Logic合约函数，它的state variabl按照自己的逻辑变化
- * 2.Proxy模式下，即使Logic合约的state variabl有值，并不会将“值”传递给Proxy合约
+ * Note： 
+ * 1.如果单独调用Logic合约函数，它的state variabl按照logic自己的逻辑变化
+ * 2.Proxy模式下，即使Logic合约的state variabl有值，并不会将“值”传递给Proxy合约，它的state variable的值依旧
+ *   为该类型的默认值
+ * 3.delegatecall使用内联汇编的目的，是为了让本来没有返回值的fallback回调函数有了返回值。通过caller合约的
+ *   increase函数可以验证。
+ * 4.当然，Proxy中如果直接定义一个新函数（比如：directDelegatecall），使用target.delegatecall()调用，也是能
+ *   够得到返回值的，那为什么要使用fallback函数？
+ *   因为fallback函数比重新定义一个函数实现起来更简洁，它能够让我们忘记Proxy合约，好像直接跟Logic合约交互一样。
+ *   反之，如果重新定义一个新函数，每次都要调用该函数，但参数为abi.encodeWithSignature(Logic合约函数, arg);
+ *   非常容易让人将Proxy、Logic合约混淆。
  * 验证方式：
  * 1.调用Logic合约increment函数，state variable变量x的值为100、101、102……
  * 2.调用Proxy合约通过Low level interactions，传递0xd09de08a函数，state variable
@@ -28,17 +36,9 @@ contract Proxy {
 
     /**
      * @dev 回调函数，调用`_delegate()`函数将本合约的调用委托给 `implementation` 合约
+     *      通过内联汇编，使得fallback回调函数有了返回值
      */
     fallback() external payable {
-        _delegate();
-    }
-
-    receive() external payable {}
-
-    /**
-     * @dev 将调用委托给逻辑合约运行
-     */
-    function _delegate() internal {
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly
             // block because it will not return to Solidity code. We overwrite the
@@ -68,6 +68,16 @@ contract Proxy {
         }
     }
 
+    receive() external payable {}
+
+    //验证直接delegatecall，是否能获取返回值
+    //调用Logic合约的increment函数，预期的返回值是1
+    function directDelegatecall(bytes calldata data) public returns(bytes memory) {
+        (bool ok, bytes memory result) = implementation.delegatecall(data);
+        require(ok, "delegatecall failed!");
+        return result;
+    }
+
     function getValBySlot(uint _slot) public view returns(uint256 val) {
         assembly {
             val := sload(_slot)
@@ -89,6 +99,10 @@ contract Logic {
         emit CallSuccess();
         x++;
         return x;
+    }
+
+    function getStr(string calldata _str) public returns(string memory) {
+        //todo 
     }
 }
 
