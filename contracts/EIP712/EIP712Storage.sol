@@ -17,7 +17,7 @@ contract EIP712Storage {
     using ECDSA for bytes32;
 
     bytes32 private constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-    bytes32 private constant STORAGE_TYPEHASH = keccak256("sigData(address caller,uint256 number,address to,uint256 value)");
+    bytes32 private constant SIGDATA_TYPEHASH = keccak256("sigData(address caller,uint256 number,address to,uint256 value)");
     bytes32 private DOMAIN_SEPARATOR;
     uint256 public number;
     address public owner;
@@ -68,7 +68,7 @@ contract EIP712Storage {
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
-            keccak256(abi.encode(STORAGE_TYPEHASH, msg.sender, _num, to, value))
+            keccak256(abi.encode(SIGDATA_TYPEHASH, msg.sender, _num, to, value))
         )); 
         
         address signer = digest.recover(v, r, s); // 恢复签名者
