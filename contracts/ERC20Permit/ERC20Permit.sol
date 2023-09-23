@@ -10,10 +10,17 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 /**
  * @dev ERC20 Permit 扩展的接口，允许通过签名进行批准，如 https://eips.ethereum.org/EIPS/eip-2612[EIP-2612]中定义。
  *
- * 添加了 {permit} 方法，可以通过帐户签名的消息更改帐户的 ERC20 余额（参见 {IERC20-allowance}）。通过不依赖 {IERC20-approve}，代币持有者的帐户无需发送交易，因此完全不需要持有 Ether。
+ * 比起ERC20的改进点：
+ * ①添加了 {permit} 方法，可以通过帐户签名的消息更改帐户的 ERC20 授权额度（参见 {IERC20-allowance}）。
+ * ②通过不依赖 {IERC20-approve}，代币持有者的帐户无需发送交易，因此完全不需要持有 Ether。
+ * 
+ * 待优化点：
+ * 1.跟Dapp联动的nonce值，要跟合约保持一致；
  */
 contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     mapping(address => uint) private _nonces;
+
+    event Msg(uint chainId);
 
     bytes32 private constant _PERMIT_TYPEHASH =
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
@@ -21,7 +28,9 @@ contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     /**
      * @dev 初始化 EIP712 的 name 以及 ERC20 的 name 和 symbol
      */
-    constructor(string memory name, string memory symbol) EIP712(name, "1") ERC20(name, symbol){}
+    constructor(string memory name, string memory symbol) EIP712(name, "1") ERC20(name, symbol){
+        emit Msg(block.chainid);
+    }
 
     /**
      * @dev See {IERC20Permit-permit}.

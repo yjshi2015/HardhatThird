@@ -9,16 +9,16 @@
   <h1>ERC20Permit Signature Example</h1>
 
   <label for="name">Name:</label>
-  <input id="name" value="WTFPermit">
+  <input id="name" value="SYJPermit">
   <br>
   <label for="chainId">Chain ID:</label>
   <input id="chainId" value="11155111">
   <br>
   <label for="contractAddress">Contract Address:</label>
-  <input id="contractAddress" value="0xf8e81D47203A594245E36C48e151709F0C19fBe8">
+  <input id="contractAddress" value="0x641Ed7D232c35f1f9B7E35fED057B6C0Ad1103A4">
   <br>
   <label for="spender">Spender:</label>
-  <input id="spender" value="0x5B38Da6a701c568545dCfcB03FcB875f56beddC4">
+  <input id="spender" value="0xe05A5b516Ad324fa5a90C184216175610A776766">
   <br>
   <label for="value">Amount:</label>
   <input id="value" value="100">
@@ -36,6 +36,7 @@
   
   <h5>钱包地址: <span class="showAccount"></span></h5>
   <h5>钱包nonce: <span class="showNonce"></span></h5>
+  <h5>钱包nonce2: <span class="showNonce2"></span></h5>
   <h5>ChainID: <span class="showChainID"></span></h5>
   <h5>ETH 余额: <span class="showETHBalance"></span></h5>
   <h5>签名数据: <span class="showSignature"></span></h5>
@@ -47,6 +48,7 @@
     import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.3.0/ethers.js";      const ethereumButton = document.querySelector('.connect');
     const showAccount = document.querySelector('.showAccount');
     const showNonce = document.querySelector('.showNonce');
+    const showNonce2 = document.querySelector('.showNonce2');
     const showChainID = document.querySelector('.showChainID');
     const showETHBalance = document.querySelector('.showETHBalance');
     const showSignature = document.querySelector('.showSignature');
@@ -69,9 +71,14 @@
         console.log(`钱包地址: ${account}`)
         showAccount.innerHTML = account;
         
-        const nonce = await provider.send("eth_getTransactionCount", []);
-        console.log(`交易次数${nonce}`)
+        const nonce = await provider.send("eth_getTransactionCount", [account, 'latest']);
+        console.log(`交易次数: ${nonce}`)
         showNonce.innerHTML = nonce;
+
+        const nonce2 = await provider.getTransactionCount(account);
+        console.log(`交易次数2: ${nonce2}`)
+        showNonce2.innerHTML = nonce2;
+
 
         // 读取chainid
         const { chainId } = await provider.getNetwork()
