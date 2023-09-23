@@ -1,19 +1,30 @@
 // SPDX-License-Identifier: MIT
-// By 0xAA 
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "hardhat/console.sol";
 
+/**
+ * @title 结构化签名数据：让签名的内容不再是一堆十六进制码
+ * @author 
+ * @notice 
+ * 这只是1个简单的demo，通过HTML生成签名，此时能够看到结构化签名内容，再用签名调用合约对应的接口，
+ * 此时依旧是一堆十六进制码，这种方式很蹩脚，并不是预期的那种，但不妨碍它是核心demo。
+ * 
+ * 更详细的内容参见：https://eips.ethereum.org/EIPS/eip-712
+ */
 contract EIP712Storage {
     using ECDSA for bytes32;
 
     bytes32 private constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-    bytes32 private constant STORAGE_TYPEHASH = keccak256("sigData(address spender,uint256 number)");
+    bytes32 private constant STORAGE_TYPEHASH = keccak256("sigData(address caller,uint256 number,address to,uint256 value)");
     bytes32 private DOMAIN_SEPARATOR;
-    uint256 number;
-    address owner;
+    uint256 public number;
+    address public owner;
 
-    constructor(){
+    event SignerFromSig(address signer);
+
+    constructor() {
         DOMAIN_SEPARATOR = keccak256(abi.encode(
             EIP712DOMAIN_TYPEHASH, // type hash
             keccak256(bytes("EIP712Storage")), // name
@@ -22,12 +33,16 @@ contract EIP712Storage {
             address(this) // contract address
         ));
         owner = msg.sender;
+        console.log("chainid-->", block.chainid);
     }
+
+    receive() external payable {}
 
     /**
      * @dev Store value in variable
+     * 谁发起的签名，谁拿签名调用
      */
-    function permitStore(uint256 _num, bytes memory _signature) public {
+    function permitStore(uint256 _num, address to, uint256 value, bytes memory _signature) public {
         // 检查签名长度，65是标准r,s,v签名的长度
         require(_signature.length == 65, "invalid signature length");
         bytes32 r;
@@ -53,21 +68,16 @@ contract EIP712Storage {
         bytes32 digest = keccak256(abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR,
-            keccak256(abi.encode(STORAGE_TYPEHASH, msg.sender, _num))
+            keccak256(abi.encode(STORAGE_TYPEHASH, msg.sender, _num, to, value))
         )); 
         
         address signer = digest.recover(v, r, s); // 恢复签名者
-        require(signer == owner, "EIP712Storage: Invalid signature"); // 检查签名
+        emit SignerFromSig(signer);
+        require(signer == msg.sender, "EIP712Storage: Invalid signature"); // 检查签名
 
+        // todo 模拟向to转账value
+        
         // 修改状态变量
         number = _num;
-    }
-
-    /**
-     * @dev Return value 
-     * @return value of 'number'
-     */
-    function retrieve() public view returns (uint256){
-        return number;
-    }    
+    }  
 }
