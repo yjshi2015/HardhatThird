@@ -1,42 +1,10 @@
 # 记录日常问题
 
-## 922代办
-- 投assume
-- WTF课程3节
-- 记录BOSS全国智能合约岗位数量、远程数量
-- V站咨询remote 智能合约岗是海投，还是精挑细选
-- https://mirror.xyz/是什么网站
-- ERC4626和1155的区别
-
 - 跨链桥
 - rust
 - hardhat
 - nuiswap
 - 前端react、uswagi
-
-## 921今日代办
-- ~~投assume~~
-- ~~WTF课程3节~~
-- vscode如何配置solidity编译器，识别语法错误
-- vscode快捷键 设置成跟IDEA一样
-
-## 920今日问题
-- 投assume
-- ~~WTF课程3节~~
-- ~~ctf-->mapping的布局~~
-
-## 919今日问题
-- Remix如何debug？    可以点开右侧的Debug按钮，具体查看下面的logs。
-- vscode无法打开import的sol文件
-
-## 代办
-
-5、当前项目是否有漏洞？？？
-
-6、做赏金猎人
-
-
-10、十六进制转化的网站是哪个？
 
 11、再看upgradeContract
 

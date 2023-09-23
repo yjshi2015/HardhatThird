@@ -14,6 +14,9 @@ import "./IERC165.sol";
  * 对于ERC20的同质化代币，通过id来区分不同种类的代币，比如BNB/ETH/BTC等;
  * 对于ERC721的非同质化代币，也是通过id来区分，每个id对应的数量都为1，同时他们对应的baseurl是
  * 相同的（这点让人费解）
+ * 
+ * @notice
+ * ERC1155合约只是管理代币，并不创建合约代币，而EIP712协议则是创建合约代币
  */
 contract ERC1155 is IERC165, IERC1155, IERC1155MetadataURI {
     using Address for address; // 使用Address库，用isContract来判断地址是否为合约
