@@ -20,13 +20,14 @@
   <input id="name" value="EIP712Storage">
   <br>
   <label for="chainId">Chain ID:</label>
-  <input id="chainId" value="1">
+  <input id="chainId" value="11155111">
   <br>
   <label for="contractAddress">Contract Address:</label>
-  <input id="contractAddress" value="0xf8e81D47203A594245E36C48e151709F0C19fBe8">
+  <input id="contractAddress" value="0xB78ecA9c258b68C7E6Cb9918573aBCa5793f1584">
   <br>
-  <label for="spender">Spender:</label>
-  <input id="spender" value="0x5B38Da6a701c568545dCfcB03FcB875f56beddC4">
+  <label for="caller">Caller:</label>
+  <input id="caller" value="0x5B38Da6a701c568545dCfcB03FcB875f56beddC4">
+  
   <br>
   <label for="number">number:</label>
   <input id="number" value="100">
@@ -60,7 +61,7 @@
         console.log("provider-->", provider);
         // 读取钱包地址
         const accounts = await provider.send("eth_requestAccounts", []);
-		console.log("accounts-->", accounts);
+		    console.log("accounts-->", accounts);
         const account = accounts[0]
         console.log(`钱包地址: ${account}`)
         showAccount.innerHTML = account;
@@ -83,7 +84,7 @@
       const version = "1";
       const chainId = parseInt(document.getElementById('chainId').value);
       const contractAddress = document.getElementById('contractAddress').value;
-      const spender = document.getElementById('spender').value;
+      const caller = document.getElementById('caller').value;
       const number = document.getElementById('number').value;
       const provider = new ethers.BrowserProvider(window.ethereum)
       const signer = await provider.getSigner()
@@ -97,15 +98,19 @@
       };
 
       const types = {
-        Storage: [
-          { name: "spender", type: "address" },
+        sigData: [
+          { name: "caller", type: "address" },
           { name: "number", type: "uint256" },
+          { name: "to", type: "address"},
+          { name: "value", type: "uint256" },
         ],
       };
 
       const message = {
-        spender: spender,
+        caller: owner,
         number: number,
+        to: "0xe05A5b516Ad324fa5a90C184216175610A776766",//后四位：1309
+        value: 1
       };
 
       try {
