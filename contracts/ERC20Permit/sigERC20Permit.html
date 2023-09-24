@@ -75,6 +75,7 @@
         console.log(`交易次数: ${nonce}`)
         showNonce.innerHTML = nonce;
 
+        //应该读取合约的mapping中的nonce，而不是account
         const nonce2 = await provider.getTransactionCount(account);
         console.log(`交易次数2: ${nonce2}`)
         showNonce2.innerHTML = nonce2;

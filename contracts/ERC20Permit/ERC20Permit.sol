@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
  * ②通过不依赖 {IERC20-approve}，代币持有者的帐户无需发送交易，因此完全不需要持有 Ether。
  * 
  * 待优化点：
- * 1.跟Dapp联动的nonce值，要跟合约保持一致；
+ * 1.跟Dapp联动的nonce值，要跟合约保持一致；而不是跟account保持一致；
  */
 contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     mapping(address => uint) private _nonces;
